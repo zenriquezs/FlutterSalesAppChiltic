@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "173491941794",
+    "project_id": "enrique-zs-flutter",
+    "storage_bucket": "enrique-zs-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173491941794:android:973a5e93e29df51cf982fb",
+        "android_client_info": {
+          "package_name": "com.example.app_flutte_firebase_enriquezs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4V4J7gOjfauKaoy8I5Gssnglzt475Keg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
