@@ -308,7 +308,7 @@ class HomeScreen extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Container(
-                height: 110,
+                height: 100,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -323,7 +323,7 @@ class HomeScreen extends StatelessWidget {
                 top: 0,
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.orange,
                     borderRadius: const BorderRadius.only(

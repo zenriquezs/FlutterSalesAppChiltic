@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class SignUpScreen extends StatelessWidget {
   SignUpScreen({super.key});
 
@@ -12,71 +13,78 @@ class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _registerUser(BuildContext context) async {
-    try {
-      final passwordBytes = utf8.encode(_passwordController.text.trim());
-      final hashedPassword = md5.convert(passwordBytes).toString();
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+  void _navigateToLogin(BuildContext context) {
+    Navigator.pop(context);
+  }
 
-      User? user = userCredential.user;
+Future<void> _registerUser(BuildContext context) async {
+  try {
+    final passwordBytes = utf8.encode(_passwordController.text.trim());
+    final hashedPassword = md5.convert(passwordBytes).toString();
 
-      if (user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'name': _nameController.text.trim(),
-          'phone': _phoneController.text.trim(),
-          'email': _emailController.text.trim(),
-          'hashedPassword': hashedPassword,
-          'userId': user.uid,
-        });
-        _nameController.clear();
-        _phoneController.clear();
-        _emailController.clear();
-        _passwordController.clear();
+    // Crear usuario en FirebaseAuth
+    UserCredential userCredential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
 
-        await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Registro Exitoso'),
-            content: const Text('Te has registrado correctamente.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Aceptar'),
-              ),
-            ],
-          ),
-        );
-
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      showDialog(
+    User? user = userCredential.user;
+    if (user != null) {
+      // Mostrar diálogo de éxito
+      await showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Error de Registro'),
-          content: Text('Hubo un problema: ${e.toString()}'),
+          title: const Text('Registro Exitoso'),
+          content: const Text('Te has registrado correctamente.'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                // Navegar a la pantalla principal (MainScreen o LoginScreen)
+                _navigateToLogin(context);
               },
               child: const Text('Aceptar'),
             ),
           ],
         ),
       );
-    }
-  }
 
-  void _navigateToLogin(BuildContext context) {
-    Navigator.pop(context);
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'name': _nameController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'email': _emailController.text.trim(),
+        'hashedPassword': hashedPassword,
+        'userId': user.uid,
+      });
+
+      // Limpiar los controladores
+      _nameController.clear();
+      _phoneController.clear();
+      _emailController.clear();
+      _passwordController.clear();
+    } else {
+      throw Exception("Usuario no válido.");
+    }
+  } catch (e) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error de Registro'),
+        content: Text('Hubo un problema: ${e.toString()}'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
