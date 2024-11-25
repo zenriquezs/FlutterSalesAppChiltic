@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'bottom_navigation_config.dart';
 import 'tropical_products.dart';
 import 'citrus_products.dart';
@@ -231,6 +232,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
+            const OpinionsForm(),
           ],
         ),
       ),
@@ -363,6 +365,112 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+class OpinionsForm extends StatefulWidget {
+  const OpinionsForm({super.key});
+
+  @override
+  _OpinionsFormState createState() => _OpinionsFormState();
+}
+
+class _OpinionsFormState extends State<OpinionsForm> {
+  late DatabaseReference _opinionsRef;
+  final TextEditingController _opinionController = TextEditingController();
+
+@override
+void initState() {
+    super.initState();
+    _initializeOpinionsRef();
+  }
+
+void _initializeOpinionsRef() {
+    final User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      final String emailKey = currentUser.email!.replaceAll('.', ','); // Reemplaza '.' por ',' para Firebase
+      _opinionsRef = FirebaseDatabase.instance.ref().child("opinions").child(emailKey);
+    }
+  }
+
+void _submitOpinion() {
+    final String opinion = _opinionController.text.trim();
+    if (opinion.isNotEmpty) {
+      _opinionsRef.push().set({
+        "opinion": opinion,
+        "timestamp": DateTime.now().toIso8601String(),
+      }).then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Opinión enviada con éxito!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        _opinionController.clear();
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al enviar la opinión. Intenta de nuevo.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, escribe una opinión antes de enviar.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Opiniones',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _opinionController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                hintText: 'Escribe tus opiniones aquí...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _submitOpinion,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              child: const Text('Enviar'),
+            ),
+          ],
+        ),
       ),
     );
   }
