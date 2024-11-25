@@ -36,11 +36,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Clave global para el formulario
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); 
 
   Future<void> _signIn() async {
-    if (_formKey.currentState!.validate()) {
-      // Solo intentar iniciar sesión si el formulario es válido
+    if (_formKey.currentState!.validate()) {      
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -69,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Form(
-        key: _formKey, // Asociamos el Formulario con la clave
+        key: _formKey, 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -151,8 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
-                  onTap: () {
-                    // Aquí puedes agregar la lógica para recuperar contraseña
+                  onTap: () {                    
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Función no implementada')),
                     );
@@ -187,8 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: GestureDetector(
-                onTap: () {
-                  // Navegar a la pantalla de registro
+                onTap: () {                  
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SignUpScreen()),
